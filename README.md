@@ -1,4 +1,4 @@
-# Установка Kubernetes v1.31 с помощью kubeadm 
+# Установка Kubernetes v1.32 с помощью kubeadm 
 ## Требования для VM (взято с офф документации, не стал переводить)
 * A compatible Linux host. The Kubernetes project provides generic instructions for Linux distributions based on Debian and Red Hat, and those distributions without a package manager.
 * 2 GB or more of RAM per machine (any less will leave little room for your apps).
@@ -20,7 +20,7 @@
   ```
   sudo swapoff -a 
   ```
-###  Выключаем swap c nf,kbws 
+###  Выключаем swap c fstab
   ```
   sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
   ```
@@ -49,13 +49,13 @@ sudo sysctl -p
   ```
   # If the directory `/etc/apt/keyrings` does not exist, it should be created before the curl command, read the note below.
   # sudo mkdir -p -m 755 /etc/apt/keyrings
-  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
   ```
 ### Добавьте соответствующий репозиторий apt для Kubernetes. Обратите внимание, что этот репозиторий содержит пакеты только для Kubernetes 1.31; для других минорных версий Kubernetes вам нужно изменить минорную версию в URL, чтобы она соответствовала желаемой минорной версии (также убедитесь, что вы читаете документацию для версии Kubernetes, которую планируете установить).
 
   ```
   # This overwrites any existing configuration in /etc/apt/sources.list.d/kubernetes.list
-  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
   ```
 ### Обновите индекс пакетов apt, установите kubelet, kubeadm и kubectl, и зафиксируйте их версию.
   ```
@@ -64,19 +64,27 @@ sudo sysctl -p
   sudo apt-mark hold kubelet kubeadm kubectl
   ```
 
-### (По желанию) Включите службу kubelet перед запуском kubeadm:
+### (Опционально) Включите службу kubelet перед запуском kubeadm:
   ```
   sudo systemctl enable --now kubelet
   ```
 ## Установка CRI-O
 ### Добавляем репозиторию и ключи
-  ```
-  curl -fsSL https://pkgs.k8s.io/addons:/cri-o:/stable:/v1.31/deb/Release.key |
-      sudo gpg --dearmor -o /etc/apt/keyrings/cri-o-apt-keyring.gpg
-  
-  echo "deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg] https://pkgs.k8s.io/addons:/cri-o:/stable:/v1.31/deb/ /" |
-      sudo tee /etc/apt/sources.list.d/cri-o.list
-  ```
+```
+apt-get update
+apt-get install -y software-properties-common curl
+```
+```
+CRIO_VERSION=v1.32
+```
+
+```
+curl -fsSL https://download.opensuse.org/repositories/isv:/cri-o:/stable:/$CRIO_VERSION/deb/Release.key |
+    gpg --dearmor -o /etc/apt/keyrings/cri-o-apt-keyring.gpg
+
+echo "deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg] https://download.opensuse.org/repositories/isv:/cri-o:/stable:/$CRIO_VERSION/deb/ /" |
+    tee /etc/apt/sources.list.d/cri-o.list
+```
 ### Обновляем индекс пакетов и устанавливаем
 ```
 sudo apt-get update && sudo apt-get install -y cri-o 
@@ -109,5 +117,8 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 ### Устанавливаем сетевой драйвер
 ```
-kubectl apply -f https://reweave.azurewebsites.net/k8s/v1.31/net.yaml
+kubectl apply -f https://reweave.azurewebsites.net/k8s/v1.32/net.yaml
 ```
+
+## Обновление 
+https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/
