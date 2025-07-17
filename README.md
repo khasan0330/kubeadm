@@ -1,4 +1,4 @@
-# Установка Kubernetes v1.32 с помощью kubeadm 
+# Установка Kubernetes v1.33 с помощью kubeadm 
 ## Требования для VM (взято с офф документации, не стал переводить)
 * A compatible Linux host. The Kubernetes project provides generic instructions for Linux distributions based on Debian and Red Hat, and those distributions without a package manager.
 * 2 GB or more of RAM per machine (any less will leave little room for your apps).
