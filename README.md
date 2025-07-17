@@ -49,13 +49,13 @@ sudo sysctl -p
   ```
   # If the directory `/etc/apt/keyrings` does not exist, it should be created before the curl command, read the note below.
   # sudo mkdir -p -m 755 /etc/apt/keyrings
-  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
   ```
-### Добавьте соответствующий репозиторий apt для Kubernetes. Обратите внимание, что этот репозиторий содержит пакеты только для Kubernetes 1.31; для других минорных версий Kubernetes вам нужно изменить минорную версию в URL, чтобы она соответствовала желаемой минорной версии (также убедитесь, что вы читаете документацию для версии Kubernetes, которую планируете установить).
+### Добавьте соответствующий репозиторий apt для Kubernetes. Обратите внимание, что этот репозиторий содержит пакеты только для Kubernetes 1.33; для других минорных версий Kubernetes вам нужно изменить минорную версию в URL, чтобы она соответствовала желаемой минорной версии (также убедитесь, что вы читаете документацию для версии Kubernetes, которую планируете установить).
 
   ```
   # This overwrites any existing configuration in /etc/apt/sources.list.d/kubernetes.list
-  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
   ```
 ### Обновите индекс пакетов apt, установите kubelet, kubeadm и kubectl, и зафиксируйте их версию.
   ```
@@ -75,7 +75,7 @@ apt-get update
 apt-get install -y software-properties-common curl
 ```
 ```
-CRIO_VERSION=v1.32
+CRIO_VERSION=v1.33
 ```
 
 ```
@@ -117,8 +117,15 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 ### Устанавливаем сетевой драйвер
 ```
-kubectl apply -f https://reweave.azurewebsites.net/k8s/v1.32/net.yaml
+kubectl apply -f https://reweave.azurewebsites.net/k8s/v1.33/net.yaml
 ```
 
-## Обновление 
-https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/
+####  Для автокомпиляции
+```ShellSession
+sudo apt install  bash-completion
+source <(kubectl completion bash)
+```
+####  Если комадну kubectl так же сократили алиасом k:
+```ShellSession
+source <(kubectl completion bash | sed s/kubectl/k/g)
+```
